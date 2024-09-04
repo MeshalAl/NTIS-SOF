@@ -23,16 +23,17 @@ class StackOverflowAPI:
 
         response = self.session.get(url, params=params)
         response.raise_for_status()
-        
+
         return response.json()
 
     def _check_cache(self, endpoint: str, params: dict | None = None) -> dict | None:
-        url_endpoint = f'{self._BASE_URL}{endpoint}'
+        url_endpoint = f"{self._BASE_URL}{endpoint}"
 
         if params:
-            params_str = '?' + \
-                f'&'.join([f'{key}={value}' for key, value in params.items()])
-            url_key = f'{url_endpoint}{params_str}'
+            params_str = "?" + f"&".join(
+                [f"{key}={value}" for key, value in params.items()]
+            )
+            url_key = f"{url_endpoint}{params_str}"
         else:
             url_key = url_endpoint
 
@@ -43,30 +44,32 @@ class StackOverflowAPI:
 
     class Users:
 
-        _DEFAULT_FILTER = '!-OzlL6z3TRuLDUz)e0rMDN*CjpMxEyd8v'
+        _DEFAULT_FILTER = "!-OzlL6z3TRuLDUz)e0rMDN*CjpMxEyd8v"
 
         def __init__(self, api) -> None:
             self.endpoint = "/users"
             self.api = api
 
-        def get_users(self,
-                      page: int = 1,
-                      page_size: int = 50,
-                      filter: str | None = None,
-                      default_filter: bool = True,
-                      **params) -> dict:
+        def get_users(
+            self,
+            page: int = 1,
+            page_size: int = 50,
+            filter: str | None = None,
+            default_filter: bool = True,
+            **params,
+        ) -> dict:
 
             self.params = {
-                'order': 'desc',
-                'sort': 'creation',
-                'site': 'stackoverflow',
-                'page': page,
-                'pagesize': page_size,
-                **params
+                "order": "desc",
+                "sort": "creation",
+                "site": "stackoverflow",
+                "page": page,
+                "pagesize": page_size,
+                **params,
             }
             if filter:
-                self.params['filter'] = filter
+                self.params["filter"] = filter
             elif default_filter:
-                self.params['filter'] = self._DEFAULT_FILTER
+                self.params["filter"] = self._DEFAULT_FILTER
 
             return self.api._get_request(self.endpoint, self.params)

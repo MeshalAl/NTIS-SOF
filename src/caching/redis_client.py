@@ -20,11 +20,11 @@ class RedisClient:
 
     @staticmethod
     def _user_id_string(user_id: int) -> str:
-        return f'userId:{str(user_id)}'
+        return f"userId:{str(user_id)}"
 
     @staticmethod
     def _api_url_string(url: str) -> str:
-        return f'api:{url}'
+        return f"api:{url}"
 
     def set_api_cache(self, url: str, payload: dict) -> bool:
         # TODO: remove hard coded expiry
@@ -37,8 +37,7 @@ class RedisClient:
         url_key = self._api_url_string(url)
         payload = self.api_cache.get(url_key)
         if payload:
-            payload_dict = json.loads(payload).update(
-                {'cached': True})  # type: ignore
+            payload_dict = json.loads(payload).update({"cached": True})  # type: ignore
             return payload_dict
         return None
 
@@ -52,7 +51,6 @@ class RedisClient:
         id_key = self._user_id_string(user_id)
         payload = self.user_cache.get(id_key)
         if payload:
-            payload_dict = json.loads(payload).update(
-                {'cached': True})  # type: ignore
+            payload_dict = json.loads(payload).update({"cached": True})  # type: ignore
             return payload_dict
         return None
