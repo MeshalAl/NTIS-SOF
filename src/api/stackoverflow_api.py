@@ -27,11 +27,13 @@ class StackOverflowAPI:
 
         return response.json()
 
-    def _check_cache(self, endpoint: str, params: dict | None = None) -> dict[str, str] | None:
+    def _check_cache(
+        self, endpoint: str, params: dict | None = None
+    ) -> dict[str, str] | None:
         url_endpoint = f"{self._BASE_URL}{endpoint}"
 
         if params:
-            params_str = "?" + f"&".join(
+            params_str = "?" + "&".join(
                 [f"{key}={value}" for key, value in params.items()]
             )
             url_key = f"{url_endpoint}{params_str}"
@@ -45,13 +47,12 @@ class StackOverflowAPI:
 
     class Users:
 
-        def __init__(self, api: 'StackOverflowAPI') -> None:
+        def __init__(self, api: "StackOverflowAPI") -> None:
             self.endpoint = "/users"
             self.api = api
 
-        def get_users(
-            self,
-            params: APIParams
-        ) -> dict:
-            
-            return self.api._get_request(self.endpoint, params=params.model_dump()) 
+        def get_users(self, params: APIParams) -> tuple[list[dict], dict]:
+            resposne_data = self.api._get_request(self.endpoint, params=params.model_dump())
+            users = resposne_data.get("items")
+            meta = {key:val for key, val in resposne_data.items() if key != "items"}
+            return users, meta
