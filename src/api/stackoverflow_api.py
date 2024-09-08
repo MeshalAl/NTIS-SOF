@@ -1,4 +1,5 @@
 import requests
+from config.config_loader import APIParams
 from caching.redis_client import RedisClient
 
 
@@ -26,7 +27,7 @@ class StackOverflowAPI:
 
         return response.json()
 
-    def _check_cache(self, endpoint: str, params: dict | None = None) -> dict | None:
+    def _check_cache(self, endpoint: str, params: dict | None = None) -> dict[str, str] | None:
         url_endpoint = f"{self._BASE_URL}{endpoint}"
 
         if params:
@@ -44,32 +45,13 @@ class StackOverflowAPI:
 
     class Users:
 
-        _DEFAULT_FILTER = "!-OzlL6z3TRuLDUz)e0rMDN*CjpMxEyd8v"
-
-        def __init__(self, api) -> None:
+        def __init__(self, api: 'StackOverflowAPI') -> None:
             self.endpoint = "/users"
             self.api = api
 
         def get_users(
             self,
-            page: int = 1,
-            page_size: int = 50,
-            filter: str | None = None,
-            default_filter: bool = True,
-            **params,
+            params: APIParams
         ) -> dict:
-
-            self.params = {
-                "order": "desc",
-                "sort": "creation",
-                "site": "stackoverflow",
-                "page": page,
-                "pagesize": page_size,
-                **params,
-            }
-            if filter:
-                self.params["filter"] = filter
-            elif default_filter:
-                self.params["filter"] = self._DEFAULT_FILTER
-
-            return self.api._get_request(self.endpoint, self.params)
+            
+            return self.api._get_request(self.endpoint, params=params.model_dump()) 
