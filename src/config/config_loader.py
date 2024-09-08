@@ -13,7 +13,6 @@ class APIParams(BaseModel):
 
 class APIConfig(BaseModel):
     params: APIParams
-    
 
 
 class RedisConfig(BaseModel):
