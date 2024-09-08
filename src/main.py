@@ -1,39 +1,41 @@
 import click
-from config.config_loader import load_config 
+from config.config_loader import load_config
 from pathlib import Path
 from pydantic import ValidationError
 
+
 @click.group()
-@click.option("-cf", "--config-path",
-              type=click.Path(exists=True),
-              show_default=True,
-              default=Path(__file__).parent / "config/defaults.yaml",
-              help="Absolute path to the config file.", 
-              required=False)
+@click.option(
+    "-cf",
+    "--config-path",
+    type=click.Path(exists=True),
+    show_default=True,
+    default=Path(__file__).parent / "config/defaults.yaml",
+    help="Absolute path to the config file.",
+    required=False,
+)
 @click.pass_context
 def start_cli(ctx, config_path: str):
-    
+    ctx.ensure_object(dict)
     try:
         config = load_config(config_path)
     except ValidationError as e:
-       raise click.FileError(f"Error loading config: {e.errors().messages}", config_path
-       
-    ctx.obj.config = config
-    
-    # flow steps: cli runs the icli, fetches users, displays the results and holds. displays current page
-    # page_size, remaining quota etc.
-    # give the user options to fetch next, or previous, save to file, "view" the file, and bookmark a user.
+        raise click.FileError(f"Error loading config: {e.errors().messages}")
 
-# importing so its hooked up as a registered command... 
+    ctx.obj['config'] = config
+
+# importing so its hooked up as a registered command...
 from cli import commands
 start_cli.add_command(commands.fetch_users)
 
 if __name__ == "__main__":
-    
-    try: 
+
+    try:
         start_cli()
     except Exception as e:
         click.echo(f"{e}", err=True, color=True, nl=True)
+    
+    
 
     # the flow branches into two main paths, one for regular command and argument based cli,
     # and the other for interactive
