@@ -20,13 +20,14 @@ def start_cli(ctx, config_path: str):
     try:
         config = load_config(config_path)
     except ValidationError as e:
-        raise click.FileError(f"Error loading config: {e.errors().messages}")
+        raise click.FileError(f"Error loading config: {e.errors()}")
 
     ctx.obj['config'] = config
 
 # importing so its hooked up as a registered command...
 from cli import commands
 start_cli.add_command(commands.fetch_users)
+start_cli.add_command(commands.bookmark)
 
 if __name__ == "__main__":
 
