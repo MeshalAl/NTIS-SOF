@@ -16,25 +16,12 @@ class APIConfig(BaseModel):
 
 
 class RedisConfig(BaseModel):
-    host: str
-    port: int
-    db: int
     decode_responses: bool
     cache_expire: int
-
-
-class DBConfig(BaseModel):
-    host: str
-    port: int
-    user: str
-    password: str
-    database: str
-
 
 class Config(BaseModel):
     api: APIConfig
     redis: RedisConfig
-    db: DBConfig
 
 
 def load_config(config_path: str) -> Config:

@@ -1,23 +1,13 @@
 ---
 api:
-  
   params:
     page: 1
-    page_size: 10
+    pagesize: 10
     order: asc
     sort: creation
     filter: "!-OzlL6z3TRuLDUz)e0rMDN*CjpMxEyd8v"
     site: stackoverflow
 redis:
-  host: localhost
-  port: 6379
-  db: 0
   decode_responses: yes
   cache_expire: 60
-db:
-  host: localhost
-  port: 5432
-  user: unused
-  password: unused
-  database: stackoverflow
 ...
