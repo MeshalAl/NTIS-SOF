@@ -4,7 +4,7 @@ import yaml
 
 class APIParams(BaseModel):
     page: int = Field(..., ge=1)
-    page_size: int = Field(..., ge=1, le=100)
+    pagesize: int = Field(..., ge=1, le=100)
     order: str
     sort: str
     site: str
