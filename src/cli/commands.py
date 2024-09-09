@@ -1,12 +1,13 @@
-from click import pass_context, option, command, Choice
+from click import pass_context, option, command, Choice, echo
 from api.stackoverflow_api import StackOverflowAPI
 from rich.console import Console, Group
 from rich.panel import Panel
 from rich.table import Table
-from config.config_loader import Config, APIConfig, APIParams, RedisConfig, DBConfig
+from config.config_loader import Config, APIConfig, APIParams, RedisConfig
 from models.sof_models import SOFUser
+from models.bookmark_model import Bookmark
 from pydantic import ValidationError
-from cli.utility import is_piped, create_pipe_data, serialize_to_stdout
+from cli.utility import is_piped_in, is_piped_out, create_pipe_data, serialize_to_stdout, deserialize_from_stdin
 
 
 # TODO: find a clean way to make default param values dynamic
@@ -74,14 +75,14 @@ def fetch_users(ctx, **kwargs):
         validated_params = APIParams.model_validate(params)
         api_config.params = validated_params
     except ValidationError as e:
-        raise
+        raise e
 
     api = StackOverflowAPI().users
     users, meta = api.get_users(api_config.params)
 
-    # make a dedicated rich table printer function
+    # TODO: make a dedicated rich table printer function
 
-    if not is_piped():
+    if not is_piped_out():
         table = Table(title="Users", expand=True)
 
         unordered_columns: set = set(kwargs.get("display_columns"))
@@ -122,5 +123,63 @@ def fetch_users(ctx, **kwargs):
                 console.print(group)
             else:
                 console.print(table)
-    if is_piped():
+    if is_piped_out():
         serialize_to_stdout(create_pipe_data("fetch_users", users))
+@command()
+@option("--user-id", "-id", multiple=True, help="specify the user ids", required=False)
+@option("--remove-user", "-rm", is_flag=True, default=False, help="Operation to be executed on users", required=False)
+@option("--add-user", "-add", is_flag=True, default=False, help="Operation to be executed on users", required=False)
+@option("--page-size", "-ps", type=int, default=10,  help="number of users to display per page", required=False)
+@option("--page", "-p", type=int, default=1, help="page number to display", required=False)
+def bookmark(**kwargs):
+
+    from db.database import get_session
+    from db.dal.bookmark_dal import create_bookmark, get_bookmarks, delete_bookmark
+    db = next(get_session())
+
+    if is_piped_in():
+        pipe_data = deserialize_from_stdin()
+        
+        if pipe_data.get("source") == "fetch_users":
+            users: Bookmark = [Bookmark(**user) for user in pipe_data.get("data")]
+        if not users:
+            raise ValueError("Pipe does not contain any user data")
+        
+        # find current operation, add or remove
+
+        if kwargs.get("add_user") and not kwargs.get("remove_user"):
+            
+            for user in users:
+                create_bookmark(user, db)
+                
+            echo(f"{len(users)} users added to bookmarks", color=True)
+
+        if kwargs.get("remove_user") and not kwargs.get("add_user"):
+
+            for user in users:
+                delete_bookmark(user.get("user_id"), db)
+
+    elif not is_piped_out() and not kwargs.get("add_user") and not kwargs.get("remove_user"):
+        pass
+        
+        
+        # orm logic to fetch bookmarks based on page size. number later we figure it.
+        
+            
+
+
+    # if no options are passed, then display the bookmarks
+    # fetch bookmarks from db
+    # display the bookmarks in a table
+    # if no bookmarks found, display a message saying no bookmarks found.
+    # if -d flag is passed, then delete the user by id, if no id is passed, then SEND A WARNING MESSAGE AND ASK FOR CONFIRMATION
+# psudeo code for bookmarking
+# two methods of data input, either get from pipe, or by fetching single user by id.
+# if through pipe, then format and push it to orm. if by id, then fetch user and push to orm.
+# to remove a user, either by id or by piped data.
+# to view, just fetch them from db and display using the same table logic as fetch_users.
+
+# WARNING: no mixing between the two modes, either by id or by pipe, not both, same goes with remove and view
+# by default its viewing the bookmarks, with pagination.
+# if no bookmarks, then display a message saying no bookmarks found.
+# if -d flag is passed, then delete the user by id, if no id is passed, then SEND A WARNING MESSAGE AND ASK FOR CONFIRMATION
