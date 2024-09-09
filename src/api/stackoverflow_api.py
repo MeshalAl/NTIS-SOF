@@ -16,8 +16,9 @@ class StackOverflowAPI:
 
     def _get_request(self, endpoint: str, params: dict | None = None) -> dict:
         url = f"{self._BASE_URL}{endpoint}"
-
-        cached_response = self._check_cache(endpoint, params)
+        
+        cache_key = self._build_cache_key(url, params)
+        cached_response = self._check_cache(cache_key)
 
         if cached_response:
             return cached_response
@@ -25,34 +26,38 @@ class StackOverflowAPI:
         response = self.session.get(url, params=params)
         response.raise_for_status()
 
-        return response.json()
+        self._cache.set_api_cache(cache_key, response.json())
+        response_data = response.json()
+        response_data.update({"cached": False})
+        return response_data
 
     def _check_cache(
-        self, endpoint: str, params: dict | None = None
+        self, cache_key: str
     ) -> dict[str, str] | None:
-        url_endpoint = f"{self._BASE_URL}{endpoint}"
 
+        cached_data = self._cache.get_api_cache(cache_key)
+
+        if cached_data:
+            return cached_data
+        return None
+    @staticmethod
+    def _build_cache_key(url:str, params: dict | None) -> str:
         if params:
             params_str = "?" + "&".join(
                 [f"{key}={value}" for key, value in params.items()]
             )
-            url_key = f"{url_endpoint}{params_str}"
+            return f"{url}{params_str}"
         else:
-            url_key = url_endpoint
-
-        cached_data = self._cache.get_api_cache(url_key)
-        if cached_data:
-            return cached_data
-        return None
-
+            return url
     class Users:
-
         def __init__(self, api: "StackOverflowAPI") -> None:
             self.endpoint = "/users"
             self.api = api
 
         def get_users(self, params: APIParams) -> tuple[list[dict], dict]:
-            resposne_data = self.api._get_request(self.endpoint, params=params.model_dump())
+            resposne_data = self.api._get_request(
+                self.endpoint, params=params.model_dump()
+            )
             users = resposne_data.get("items")
-            meta = {key:val for key, val in resposne_data.items() if key != "items"}
+            meta = {key: val for key, val in resposne_data.items() if key != "items"}
             return users, meta
