@@ -5,7 +5,7 @@ api:
     pagesize: 10
     order: asc
     sort: creation
-    filter: "!-OzlL6z3TRuLDUz)e0rMDN*CjpMxEyd8v"
+    filter: "!56AvQjU4bEYUoTdqt_zUKShh6TUK_ekUQULZ(-"
     site: stackoverflow
 redis:
   decode_responses: yes
