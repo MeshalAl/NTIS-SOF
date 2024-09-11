@@ -10,6 +10,10 @@ class APIParams(BaseModel):
     site: str
     filter: str
 
+class byIDParams(BaseModel):
+    # NO DEFAULTS LOADING NO TIME. 
+    filter: str
+    site: str
 
 class APIConfig(BaseModel):
     params: APIParams
