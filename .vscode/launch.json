@@ -15,6 +15,43 @@
                 "--pagesize",
                 "5"
             ]
+        },
+        {
+            "name": "Python Debugger: debug bookmark",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "bookmark",
+                "--all-columns"
+            ]
+        },
+        {
+            "name": "Python Debugger: debug add bookmark by id",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "bookmark",
+                "add", 
+                "-id",
+                "999999"
+            ]
+        },
+        {
+            "name": "Python Debugger: debug remove bookmark by id",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "bookmark",
+                "remove", 
+                "-id",
+                "999999"
+            ]
         }
     ]
 }
