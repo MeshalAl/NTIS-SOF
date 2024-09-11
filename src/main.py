@@ -22,11 +22,13 @@ def start_cli(ctx, config_path: str):
     except ValidationError as e:
         raise click.FileError(f"Error loading config: {e.errors()}")
 
-    ctx.obj['config'] = config
+    ctx.obj["config"] = config
+
 
 # importing so its hooked up as a registered command...
 from cli import commands
-start_cli.add_command(commands.fetch_users)
+
+start_cli.add_command(commands.fetch)
 start_cli.add_command(commands.bookmark)
 
 if __name__ == "__main__":
@@ -35,8 +37,6 @@ if __name__ == "__main__":
         start_cli()
     except Exception as e:
         click.echo(f"{e}", err=True, color=True, nl=True)
-    
-    
 
     # the flow branches into two main paths, one for regular command and argument based cli,
     # and the other for interactive
