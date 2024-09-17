@@ -25,12 +25,12 @@ def start_cli(ctx, config_path: str):
     ctx.obj["config"] = config
 
 
-# importing so its hooked up as a registered command...
+
 from cli import commands
 
 start_cli.add_command(commands.fetch)
 start_cli.add_command(commands.bookmark)
-
+start_cli.add_command(commands.sof_file)
 if __name__ == "__main__":
 
     try:
@@ -38,10 +38,3 @@ if __name__ == "__main__":
     except Exception as e:
         click.echo(f"{e}", err=True, color=True, nl=True)
 
-    # the flow branches into two main paths, one for regular command and argument based cli,
-    # and the other for interactive
-    # ex command based: python main.py -{function} -{args}, so fetch_users --page-size 10 --page 1
-    # same goes on for bookmarking, ex python main.py bookmarks --add-user 293812 --add-user 293812,
-    # adding users should also trigger writing to file? cache? db? all?? not sure yet.
-    # python main.py bookmarks --remove-user 293812, maybe we can supply a list of ids to remove? would be nice
-    # python main.py bookmarks --view-bookmarks, feels very straight forward, display the bookmarks. and thats it.
