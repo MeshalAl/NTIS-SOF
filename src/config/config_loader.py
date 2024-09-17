@@ -10,22 +10,31 @@ class APIParams(BaseModel):
     site: str
     filter: str
 
+
 class byIDParams(BaseModel):
-    # NO DEFAULTS LOADING NO TIME. 
+    # this will be manually loaded on demand..
     filter: str
     site: str
 
+
 class APIConfig(BaseModel):
     params: APIParams
+    use_cache: bool
 
 
 class RedisConfig(BaseModel):
     decode_responses: bool
     cache_expire: int
 
+
+class SOFConfig(BaseModel):
+    default_path: str
+
+
 class Config(BaseModel):
     api: APIConfig
     redis: RedisConfig
+    sof_handler: SOFConfig
 
 
 def load_config(config_path: str) -> Config:
