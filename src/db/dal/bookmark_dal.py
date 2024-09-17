@@ -1,5 +1,4 @@
 from db.models.models import BookmarkORM
-from db.database import engine
 from models.bookmark_model import Bookmark, BookmarkDB
 from sqlalchemy.orm import Session
 from sqlalchemy import select, delete, update, insert
