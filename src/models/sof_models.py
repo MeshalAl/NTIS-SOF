@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Any
 
 
 class SOFUser(BaseModel):
@@ -29,7 +30,7 @@ class SOFUser(BaseModel):
         else:
             return None
 
-    def to_sofuser_string(self) -> str:
+    def serialize_sofuser(self) -> str:
         return (
             "\t".join(
                 map(
@@ -54,7 +55,7 @@ class SOFUser(BaseModel):
         )
 
     @classmethod
-    def from_sofuser_string(cls, sofuser_string: str) -> "SOFUser":
+    def deserialize_sofuser(cls, sofuser_string: str) -> "SOFUser":
         model_keys = list(cls.model_fields.keys())
 
         string_data = sofuser_string.strip().split("\t")
@@ -63,3 +64,8 @@ class SOFUser(BaseModel):
 
         sof_user_data = dict(zip(model_keys, demarked_sof_user_data))
         return cls(**sof_user_data)  # type: ignore
+
+
+class SOFFile(BaseModel):
+    users: list[SOFUser]
+    meta: dict[str, Any]
