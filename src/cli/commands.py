@@ -1,40 +1,63 @@
-from click import pass_context, option, command, Choice, echo, confirm
 import click
-from api.stackoverflow_api import StackOverflowAPI
-from ui.rich_builders import build_rich_table
-from config.config_loader import Config, APIConfig, APIParams, RedisConfig
-from models.sof_models import SOFUser
-from models.bookmark_model import Bookmark
-from pydantic import ValidationError
-from cli.utility import (
-    is_piped_in,
-    is_piped_out,
-    create_pipe_data,
-    serialize_to_stdout,
-    deserialize_from_stdin,
-    user_pagination_prompt,
+
+
+@click.group()
+@click.option(
+    "--no-cache",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="""disables caching,
+              always fetches data from the source""",
 )
-from typing import List
+@click.pass_context
+def fetch(ctx, no_cache: bool):
 
-
-# from cli.options import view, add, remove
-
-
-# TODO: find a clean way to make default param values dynamic
-# for now default is hardcoded on the help message.
-
-
-
-@click.group()
-@pass_context
-def fetch(ctx, **kwargs):
-    pass
+    if no_cache:
+        click.secho("Cache disabled", fg="blue")
+        ctx.obj["config"].api.use_cache = False
+        ctx.obj["api"] = StackOverflowAPI(ctx.obj["config"].api)
+    else:
+        ctx.obj["api"] = StackOverflowAPI(ctx.obj["config"].api)
 
 
 @click.group()
-@pass_context
-def bookmark(ctx):
-    pass
+@click.option(
+    "--database-url",
+    type=str,
+    help="database url to connect to: defaults to .env DATABASE_URL",
+    default=None,
+    required=False,
+)
+@click.pass_context
+def bookmark(ctx, database_url: str):
+
+    ctx.obj["api"] = StackOverflowAPI(ctx.obj["config"].api)
+    try:
+        from db.database import DatabaseManager
+
+        db_manager = DatabaseManager(database_url=database_url)
+        db_manager.check_connection()
+        ctx.obj["db_manager"] = db_manager
+    except Exception as e:
+        raise click.ClickException(f"Database connection failed: {e}")
 
 
-from cli.options import view, add, remove, users_by_id  # initalizing the commands
+@click.group()
+@click.pass_context
+def sof_file(ctx):
+    from handlers.sof_filehandler import SOFFileHandler
+
+    try:
+        config = ctx.obj.get("config")
+
+        handler = SOFFileHandler(config=config)
+        ctx.obj["sof_handler"] = handler
+
+    except Exception as e:
+        raise click.ClickException(f"File handler failed: {e}")
+
+
+from cli.sub_commands.bookmark_commands import *
+from cli.sub_commands.fetch_commands import *
+from cli.sub_commands.sof_file_commands import *
