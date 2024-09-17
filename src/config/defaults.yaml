@@ -5,9 +5,13 @@ api:
     pagesize: 10
     order: asc
     sort: creation
-    filter: "!56AvQjU4bEYUoTdqt_zUKShh6TUK_ekUQULZ(-"
+    filter: "!56AvQjKHW2kPEINpNffehC8rTZ(UFXpKHgHhFU"
     site: stackoverflow
+  use_cache: true
 redis:
   decode_responses: yes
   cache_expire: 60
+sof_handler:
+  default_path: "./data"
+  
 ...
