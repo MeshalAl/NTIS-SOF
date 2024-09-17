@@ -2,10 +2,11 @@ from db.models import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.sql import func
 
+
 class BookmarkORM(Base):
     # find a way to make this auto generates from SOFUser model.
     __tablename__ = "bookmarks"
-    
+
     user_id = Column(Integer, primary_key=True)
     account_id = Column(Integer)
     display_name = Column(String)
