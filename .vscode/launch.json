@@ -5,22 +5,37 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: debug main",
+            "name": "Python Debugger: debug fetch users-bulk",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/sofcli.py",
             "console": "integratedTerminal",
             "args": [
-                "fetch-users",
-                "--pagesize",
-                "5"
+                "fetch",
+                "--no-cache",
+                "users-bulk",
+                "-p",
+                "20",
+            ]
+        },
+        {
+            "name": "Python Debugger: debug fetch by id",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/sofcli.py",
+            "console": "integratedTerminal",
+            "args": [
+                "fetch",
+                "users-by-id",
+                "-id",
+                "-1"
             ]
         },
         {
             "name": "Python Debugger: debug bookmark",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/sofcli.py",
             "console": "integratedTerminal",
             "args": [
                 "bookmark",
@@ -31,11 +46,11 @@
             "name": "Python Debugger: debug add bookmark by id",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/sofcli.py",
             "console": "integratedTerminal",
             "args": [
                 "bookmark",
-                "add", 
+                "add",
                 "-id",
                 "999999"
             ]
@@ -44,14 +59,55 @@
             "name": "Python Debugger: debug remove bookmark by id",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/sofcli.py",
             "console": "integratedTerminal",
             "args": [
                 "bookmark",
-                "remove", 
+                "remove",
                 "-id",
                 "999999"
             ]
-        }
+        },
+        {
+            "name": "Python Debugger: fetch users | bookmark add",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/sofcli.py",
+            "console": "integratedTerminal",
+            "args": [
+                "fetch",
+                "users-by-id",
+                "-id",
+                "99284",
+                "|",
+                "python",
+                "bookmark",
+                "add"
+            ]
+        },
+        {
+            "name": "Python Debugger: sof-file load",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/sofcli.py",
+            "console": "integratedTerminal",
+            "args": [
+                "sof-file",
+                "load"
+            ]
+        },
+        {
+            "name": "Python Debugger: sof-file save to path",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/sofcli.py",
+            "console": "integratedTerminal",
+            "args": [
+                "sof-file",
+                "save",
+                "-p",
+                "C:\\some\\absolute\\path\\soffile.sofusers"
+            ]
+        },
     ]
 }
